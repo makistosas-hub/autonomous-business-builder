@@ -1,6 +1,6 @@
 import { action } from "../_generated/server";
 import { v } from "convex/values";
-import { api } from "../_generated/api";
+import { api, internal } from "../_generated/api";
 import Stripe from "stripe";
 
 /**
@@ -44,9 +44,27 @@ export const createCheckoutSession = action({
       throw new Error("Not authorized for this organization");
     }
 
-    // Ensure the user is owner or admin
+    // Validate priceId against allowed values from env vars
+    const allowedPriceIds = [
+      process.env.STRIPE_STARTER_PRICE_ID,
+      process.env.STRIPE_PRO_PRICE_ID,
+      process.env.STRIPE_ENTERPRISE_PRICE_ID,
+    ].filter(Boolean);
+
+    if (allowedPriceIds.length > 0 && !allowedPriceIds.includes(args.priceId)) {
+      throw new Error("Invalid price ID");
+    }
+
+    // Validate redirect paths are relative (prevent open redirect)
     const successPath = args.successPath ?? "/dashboard?session_id={CHECKOUT_SESSION_ID}";
     const cancelPath = args.cancelPath ?? "/settings/billing";
+
+    if (!successPath.startsWith("/") || successPath.includes("://")) {
+      throw new Error("Invalid success path");
+    }
+    if (!cancelPath.startsWith("/") || cancelPath.includes("://")) {
+      throw new Error("Invalid cancel path");
+    }
 
     // Create or retrieve Stripe customer
     let customerId = org.stripeCustomerId;
@@ -62,8 +80,8 @@ export const createCheckoutSession = action({
       });
       customerId = customer.id;
 
-      // Persist the customer ID
-      await ctx.runMutation(api.stripe.webhooks.saveStripeCustomerId, {
+      // Persist the customer ID (internal mutation — no public exposure)
+      await ctx.runMutation(internal.stripe.webhooks.saveStripeCustomerId, {
         organizationId: org._id,
         stripeCustomerId: customerId,
       });

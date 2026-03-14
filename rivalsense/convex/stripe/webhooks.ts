@@ -1,67 +1,40 @@
-import { internalMutation, mutation } from "../_generated/server";
+import { internalMutation } from "../_generated/server";
 import { v } from "convex/values";
 
 /**
  * Save a Stripe customer ID to an organization record.
- * Called during checkout session creation.
+ * Internal only — called from the createCheckoutSession action.
  */
-export const saveStripeCustomerId = mutation({
+export const saveStripeCustomerId = internalMutation({
   args: {
     organizationId: v.id("organizations"),
     stripeCustomerId: v.string(),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Unauthorized");
-
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_email", (q) => q.eq("email", identity.email as string))
-      .first();
-
-    if (!user) throw new Error("User not found");
-
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_org_user", (q) =>
-        q.eq("organizationId", args.organizationId).eq("userId", user._id)
-      )
-      .first();
-
-    if (!membership) throw new Error("Not a member of this organization");
-
     await ctx.db.patch(args.organizationId, {
       stripeCustomerId: args.stripeCustomerId,
       updatedAt: Date.now(),
     });
-
     return { success: true };
   },
 });
 
 /**
  * Handle checkout.session.completed webhook event.
- * Called from the Next.js webhook API route after signature verification.
+ * Called from the Convex HTTP action after Stripe signature verification.
  */
 export const handleCheckoutCompleted = internalMutation({
   args: {
     stripeCustomerId: v.string(),
     stripeSubscriptionId: v.string(),
-    organizationId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    // Find org by Stripe customer ID
-    let org = await ctx.db
+    const org = await ctx.db
       .query("organizations")
       .withIndex("by_stripe_customer", (q) =>
         q.eq("stripeCustomerId", args.stripeCustomerId)
       )
       .first();
-
-    // Fallback: find by metadata organizationId if present
-    if (!org && args.organizationId) {
-      org = await ctx.db.get(args.organizationId as any);
-    }
 
     if (!org) {
       console.error(
@@ -72,7 +45,6 @@ export const handleCheckoutCompleted = internalMutation({
     }
 
     await ctx.db.patch(org._id, {
-      stripeCustomerId: args.stripeCustomerId,
       stripeSubscriptionId: args.stripeSubscriptionId,
       subscriptionStatus: "active",
       updatedAt: Date.now(),
@@ -199,11 +171,6 @@ export const handlePaymentFailed = internalMutation({
       subscriptionStatus: "past_due",
       updatedAt: Date.now(),
     });
-
-    // Note: The alerts table requires a valid changeId (v.id("competitors") is required
-    // on the changes table), so payment_failed status is surfaced through the org's
-    // subscriptionStatus field ("past_due") rather than through the alerts table.
-    // The frontend should check org.subscriptionStatus === "past_due" to show billing banners.
 
     return { success: true };
   },

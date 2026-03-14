@@ -50,7 +50,7 @@ export const list = query({
   handler: async (ctx, args) => {
     await requireOrgMember(ctx, args.organizationId);
 
-    const limit = args.limit ?? 50;
+    const limit = Math.min(args.limit ?? 50, 200);
 
     let results: any[];
 
@@ -123,7 +123,7 @@ export const getRecent = query({
   handler: async (ctx, args) => {
     await requireOrgMember(ctx, args.organizationId);
 
-    const limit = args.limit ?? 10;
+    const limit = Math.min(args.limit ?? 10, 200);
 
     const results = await ctx.db
       .query("changes")
@@ -150,7 +150,7 @@ export const getByCompetitor = query({
   handler: async (ctx, args) => {
     await requireOrgMember(ctx, args.organizationId);
 
-    const limit = args.limit ?? 50;
+    const limit = Math.min(args.limit ?? 50, 200);
 
     // Verify competitor belongs to this org
     const competitor = await ctx.db.get(args.competitorId);

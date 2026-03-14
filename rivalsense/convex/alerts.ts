@@ -45,7 +45,7 @@ export const list = query({
   handler: async (ctx, args) => {
     const { user } = await requireOrgMember(ctx, args.organizationId);
 
-    const limit = args.limit ?? 50;
+    const limit = Math.min(args.limit ?? 50, 200);
 
     if (args.status !== undefined) {
       const results = await ctx.db

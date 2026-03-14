@@ -46,6 +46,11 @@ export const createPortalSession = action({
 
     const returnPath = args.returnPath ?? "/settings/billing";
 
+    // Validate redirect path is relative (prevent open redirect)
+    if (!returnPath.startsWith("/") || returnPath.includes("://")) {
+      throw new Error("Invalid return path");
+    }
+
     const session = await stripe.billingPortal.sessions.create({
       customer: org.stripeCustomerId,
       return_url: `${appUrl}${returnPath}`,

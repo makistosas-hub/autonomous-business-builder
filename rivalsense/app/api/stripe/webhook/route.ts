@@ -55,24 +55,24 @@ export async function POST(req: NextRequest) {
         await convex.mutation(api.stripe.webhooks.handleCheckoutCompleted, {
           stripeCustomerId: session.customer as string,
           stripeSubscriptionId: session.subscription as string,
-          customerEmail: session.customer_email ?? "",
         });
         break;
       }
       case "customer.subscription.updated": {
         const subscription = event.data.object as Stripe.Subscription;
-        // Stripe v20+: billing_cycle_anchor used as period reference
-        const periodEnd = subscription.billing_cycle_anchor;
+        const priceId = subscription.items?.data?.[0]?.price?.id ?? "";
         await convex.mutation(api.stripe.webhooks.handleSubscriptionUpdated, {
+          stripeCustomerId: subscription.customer as string,
           stripeSubscriptionId: subscription.id,
-          status: subscription.status,
-          currentPeriodEnd: periodEnd,
+          subscriptionStatus: subscription.status,
+          priceId,
         });
         break;
       }
       case "customer.subscription.deleted": {
         const subscription = event.data.object as Stripe.Subscription;
         await convex.mutation(api.stripe.webhooks.handleSubscriptionDeleted, {
+          stripeCustomerId: subscription.customer as string,
           stripeSubscriptionId: subscription.id,
         });
         break;
