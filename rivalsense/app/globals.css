@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+:root {
+  /* Brand Colors */
+  --color-brand-navy: #0F1629;
+  --color-brand-slate: #1E2D4A;
+  --color-brand-electric: #3B82F6;
+  --color-brand-electric-vivid: #2563EB;
+  --color-brand-cyan: #06B6D4;
+  --color-brand-cyan-muted: #0E7490;
+
+  /* Dashboard Module Colors */
+  --color-dashboard-pricing: #10B981;
+  --color-dashboard-product: #8B5CF6;
+  --color-dashboard-website: #F59E0B;
+  --color-dashboard-hiring: #EF4444;
+  --color-dashboard-positioning: #3B82F6;
+
+  /* Status Colors */
+  --color-status-success: #10B981;
+  --color-status-warning: #F59E0B;
+  --color-status-error: #EF4444;
+  --color-status-info: #3B82F6;
+
+  /* Background Colors */
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #F8FAFC;
+  --color-bg-tertiary: #F1F5F9;
+
+  /* Border Colors */
+  --color-border-default: #E2E8F0;
+  --color-border-subtle: #F1F5F9;
+  --color-border-emphasis: #CBD5E1;
+
+  /* Text Colors */
+  --color-text-primary: #0F172A;
+  --color-text-secondary: #475569;
+  --color-text-tertiary: #94A3B8;
+  --color-text-inverse: #FFFFFF;
+}
+
+@theme inline {
+  --color-brand-navy: var(--color-brand-navy);
+  --color-brand-slate: var(--color-brand-slate);
+  --color-brand-electric: var(--color-brand-electric);
+  --color-brand-electric-vivid: var(--color-brand-electric-vivid);
+  --color-brand-cyan: var(--color-brand-cyan);
+  --color-brand-cyan-muted: var(--color-brand-cyan-muted);
+  --color-dashboard-pricing: var(--color-dashboard-pricing);
+  --color-dashboard-product: var(--color-dashboard-product);
+  --color-dashboard-website: var(--color-dashboard-website);
+  --color-dashboard-hiring: var(--color-dashboard-hiring);
+  --color-dashboard-positioning: var(--color-dashboard-positioning);
+  --color-status-success: var(--color-status-success);
+  --color-status-warning: var(--color-status-warning);
+  --color-status-error: var(--color-status-error);
+  --color-status-info: var(--color-status-info);
+  --color-bg-primary: var(--color-bg-primary);
+  --color-bg-secondary: var(--color-bg-secondary);
+  --color-bg-tertiary: var(--color-bg-tertiary);
+  --color-border-default: var(--color-border-default);
+  --color-border-subtle: var(--color-border-subtle);
+  --color-border-emphasis: var(--color-border-emphasis);
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-tertiary: var(--color-text-tertiary);
+  --color-text-inverse: var(--color-text-inverse);
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-emphasis);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-tertiary);
+}
