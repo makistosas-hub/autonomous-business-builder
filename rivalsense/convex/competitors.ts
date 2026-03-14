@@ -1,6 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
-import { getTierLimits, isWithinLimit } from "./lib/tier-limits";
+import { getTierLimits, isWithinLimit } from "./lib/tierLimits";
 
 /**
  * Verify that the current user is a member of the given organization.

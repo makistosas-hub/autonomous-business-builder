@@ -1,6 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
-import { computeTrialEndsAt } from "./lib/tier-limits";
+import { computeTrialEndsAt } from "./lib/tierLimits";
 
 /**
  * Get the current user's organization (the first org they belong to).
